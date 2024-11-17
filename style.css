@@ -1,0 +1,61 @@
+body {
+    font-family: 'League Spartan', sans-serif;
+    color: #000000;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: #2f7622;
+    color: white;
+    padding: 10px 0;
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    text-align: center;
+}
+
+nav ul li {
+    display: inline;
+    margin: 0 20px;
+}
+
+nav a {
+    text-decoration: none;
+    color: white;
+}
+
+main {
+    padding: 20px;
+}
+
+.content-section {
+    display: none; /* Hidden by default */
+}
+
+.content-section.active {
+    display: block; /* Shown when active */
+}
+
+/* Crucial: Style the canvas elements for Chart.js */
+#daily-overview-chart, #day-analysis-chart, #day-averages-chart {
+    width: 100%;  /* Or set a specific width */
+    max-width: 800px; /* Optional: Limit width on larger screens */
+    height: 400px;     /* Or adjust as needed */
+    margin: 20px auto; /* Center horizontally */
+    display: block;   /* Prevents extra spacing below the canvas */
+}
+
+/* Chart color scheme (for use within your Chart.js config)*/
+/* Example (adapt to other libraries if necessary)
+  data: {
+      datasets: [{
+          backgroundColor: ['#2f7622', '#f39700', '#c5d469'], 
+          borderColor: ['#2f7622', '#f39700', '#c5d469'],
+          // ... other data ...
+      }]
+  }
+*/

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Analytics</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> 
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="#daily-overview" onclick="showSection('daily-overview')"><i class="fas fa-chart-line"></i> Daily Overview</a></li>
+                <li><a href="#day-analysis" onclick="showSection('day-analysis')"><i class="fas fa-calendar-day"></i> Day Analysis</a></li>
+                <li><a href="#day-averages" onclick="showSection('day-averages')"><i class="fas fa-calculator"></i> Day Averages</a></li>
+            </ul>
+        </nav>
+    </header>
+
+        <main>
+        <section id="daily-overview" class="content-section active">
+          <h2>Daily Overview</h2>
+          <canvas id="daily-overview-chart"></canvas>  </section>
+
+        <section id="day-analysis" class="content-section">
+            <h2>Day Analysis</h2>
+            <label for="analysis-date">Select Date:</label>
+            <input type="date" id="analysis-date">
+            <canvas id="day-analysis-chart"></canvas>
+        </section>
+
+        <section id="day-averages" class="content-section">
+            <h2>Day Averages</h2>
+            <canvas id="day-averages-chart"></canvas> 
+        </section>
+    </main>
+    <script src="script.js"></script>
+</body>
+</html>
