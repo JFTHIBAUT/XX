@@ -4,26 +4,34 @@ async function fetchData() {
     try {
         const response = await fetch("https://raw.githubusercontent.com/JFTHIBAUT/Xki/main/xdatax.csv");
         const csvData = await response.text();
-        const rows = csvData.split('\n').slice(1);
-        restaurantData = rows.map(row => {
-            const [Timestamp, Customers, CustomersOUT, Men, MenOUT, Women, WomenOUT, Group, GroupOUT, Passersby, ACustomers, ACustomersOUT, CustomersLIVE, Dwelltime] = row.split(',');
+
+        restaurantData = csvData.split('\n').slice(1).map(row => {
+            const cols = row.split(',');
             return {
-                Timestamp: parseTimestamp(Timestamp),
-                Customers: parseInt(Customers),
-                CustomersOUT: parseInt(CustomersOUT),
-                // ... other data fields ...
-                Dwelltime: parseTime(Dwelltime)
+                Timestamp: parseTimestamp(cols[0]),
+                Customers: parseInt(cols[1]),
+                CustomersOUT: parseInt(cols[2]),
+                Men: parseInt(cols[3]),
+                MenOUT: parseInt(cols[4]),
+                Women: parseInt(cols[5]),
+                WomenOUT: parseInt(cols[6]),
+                Group: parseInt(cols[7]),
+                GroupOUT: parseInt(cols[8]),
+                Passersby: parseInt(cols[9]),
+                ACustomers: parseInt(cols[10]),
+                ACustomersOUT: parseInt(cols[11]),
+                CustomersLIVE: parseInt(cols[12]),
+                Dwelltime: parseTime(cols[13])
             };
-        }).filter(item => Object.values(item).every(val => val !== undefined && !isNaN(val)));
+        }).filter(item => Object.values(item).every(val => !isNaN(val))); // Filter out NaN values
 
-        // Create charts *after* data is fetched:
-        loadDailyOverviewChart();
-        loadDayAnalysisChart();
-        loadDayAveragesChart();
-        showSection('daily-overview'); // Show initial section
+        console.log("Parsed Restaurant Data:", restaurantData);
 
+        // Create the charts *after* fetching and parsing the data
+        createCharts();
+        showSection('daily-overview');
     } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error fetching or parsing data:", error);
     }
 }
 
@@ -31,33 +39,19 @@ function parseTimestamp(timestampStr) {
     const [datePart, timePart] = timestampStr.split(' ');
     const [month, day, year] = datePart.split('/');
     const [hour, minute] = timePart.split(':');
-    return new Date(year, month - 1, day, hour, minute);  // Correct month indexing
+    return new Date(year, month - 1, day, hour, minute);
 }
 
-// Helper function to parse time format (h:mm) to minutes
 function parseTime(timeStr) {
-    if (!timeStr) return 0; // Handle empty or invalid time strings
+    if (!timeStr || timeStr === "") return 0;
     const [hours, minutes] = timeStr.split(':');
     return parseInt(hours) * 60 + parseInt(minutes);
 }
 
-// Function to show the selected section
-function showSection(sectionId) {
-    const sections = document.querySelectorAll('.content-section');
-    sections.forEach(section => {
-        section.classList.remove('active');
-    });
-
-    document.getElementById(sectionId).classList.add('active');
-
-    // Trigger chart updates based on the section
-    if (sectionId === 'daily-overview' && window.dailyOverviewChart) {
-        loadDailyOverviewChart();
-    } else if (sectionId === 'day-analysis' && window.dayAnalysisChart) {
-        loadDayAnalysisChart();
-    } else if (sectionId === 'day-averages' && window.dayAveragesChart) {
-        loadDayAveragesChart();
-    }
+function createCharts() {
+    loadDailyOverviewChart();
+    loadDayAnalysisChart();
+    loadDayAveragesChart();
 }
 
 // --- Chart.js Chart Loading Functions ---
@@ -163,8 +157,5 @@ function loadDayAveragesChart() {
 // Initially show the Daily Overview section
 showSection('daily-overview');
 
-// Add event listener to the date input for automatic Day Analysis chart update
 document.getElementById('analysis-date').addEventListener('change', loadDayAnalysisChart);
-
-// Call fetchData when the page loads
 window.onload = fetchData;
