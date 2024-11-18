@@ -83,71 +83,135 @@ function loadDailyOverviewChart() {
     window.dailyOverviewChart = new Chart(document.getElementById('daily-overview-chart'), config);
 }
 
-function loadDayAnalysisChart() {
-    const selectedDate = document.getElementById('analysis-date').value;
-    if (!selectedDate) return;
-
-    const selectedDayData = restaurantData.filter(item => item.Timestamp.toISOString().slice(0, 10) === selectedDate);
-
-    const labels = selectedDayData.map(item => item.Timestamp.toLocaleTimeString());
+function loadDailyOverviewChart() {
+    const labels = restaurantData.map(item => item.Timestamp); // Date objects for x-axis
     const data = {
         labels: labels,
+        datasets: [{
+            label: 'Customers In',
+            data: restaurantData.map(item => item.Customers),
+            backgroundColor: 'rgba(47, 118, 34, 0.5)',  // #2f7622 with alpha
+            borderColor: '#2f7622',
+            borderWidth: 1,
+            tension: 0.4 // Smooth curves
+        }, {
+            label: 'Customers Out',
+            data: restaurantData.map(item => item.CustomersOUT),
+            backgroundColor: 'rgba(243, 151, 0, 0.5)', // #f39700 with alpha
+            borderColor: '#f39700',
+            borderWidth: 1,
+            tension: 0.4
+        }]
+    };
+
+    const config = {
+        type: 'line',
+        data: data,
+        options: {
+            responsive: true,
+            scales: {
+                x: {
+                    type: 'time',  // Time scale for x-axis
+                    time: { unit: 'hour' }
+                },
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Number of Customers'
+                    }
+                }
+            }
+        }
+    };
+
+    const ctx = document.getElementById('daily-overview-chart').getContext('2d');
+    new Chart(ctx, config);
+}
+
+function loadDayAnalysisChart() {
+    // ... (Fetch data for selected date as before) ...
+
+    const data = {
+        // ... (labels and dataset configuration as before) ...
         datasets: [
+            // ... datasets
             {
-                label: 'Customers In',
-                data: selectedDayData.map(item => item.Customers),
-                backgroundColor: '#2f7622'
+                backgroundColor: '#2f7622',  // Use your color
+                borderColor: '#2f7622',      // For bar charts, border color is important
+                borderWidth: 1
             },
             {
-                label: 'Customers Out',
-                data: selectedDayData.map(item => item.CustomersOUT),
-                backgroundColor: '#f39700'
+                backgroundColor: '#f39700',
+                borderColor: '#f39700',
+                borderWidth: 1
             },
             {
-                label: 'Customers Live', // Added to show live customers
-                data: selectedDayData.map(item => item.CustomersLIVE),
-                backgroundColor: '#c5d469'
+                backgroundColor: '#c5d469',
+                borderColor: '#c5d469',
+                borderWidth: 1
             }
         ]
+
     };
 
     const config = {
         type: 'bar',
         data: data,
-        options: { responsive: true }
+        options: {
+            responsive: true,
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Time' // Add a title to the x-axis
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Number of Customers'
+                    },
+                    stacked: true // Set stacked to true
+                }
+            }
+        }
     };
 
-    if (window.dayAnalysisChart) window.dayAnalysisChart.destroy();
-    window.dayAnalysisChart = new Chart(document.getElementById('day-analysis-chart'), config);
+    // ... (Create Chart.js chart as before)
 }
 
 function loadDayAveragesChart() {
-    // Calculate averages for each day of the week
-    const averages = { 0: [], 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] }; // 0-Sunday, 1-Monday, ..., 6-Saturday
-    restaurantData.forEach(item => {
-        const day = item.Timestamp.getDay(); // Get day of the week (0-6)
-        averages[day].push(item.Customers);
-    });
+    // ... (Calculate averages as before) ...
 
-    const avgData = Object.values(averages).map(dayData => {
-        return dayData.length > 0 ? dayData.reduce((sum, val) => sum + val, 0) / dayData.length : 0;
-    });
-
-    const labels = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const data = {
-        labels: labels,
+        // ... (labels and datasets as before) ...
         datasets: [{
             label: 'Average Customers',
             data: avgData,
-            backgroundColor: '#c5d469',
-            borderColor: '#c5d469'
+            backgroundColor: 'rgba(197, 212, 105, 0.5)', // #c5d469 with alpha
+            borderColor: '#c5d469',
+            pointBackgroundColor: '#c5d469',  // Color of the points on the radar chart
+            pointBorderColor: '#000000'
         }]
     };
 
     const config = {
         type: 'radar',
         data: data,
-        options: { responsive: true }
+        options: {
+            responsive: true,
+            scales: {
+                r: { // 'r' for radar chart scale
+                    beginAtZero: true,
+                    pointLabels: {
+                        font: { size: 12 }
+                    }
+
+                }
+            }
+        }
     };
 
     if (window.dayAveragesChart) window.dayAveragesChart.destroy();
